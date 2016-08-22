@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{71E4D1DB-81C7-4C5D-8358-D4C8D02FA9D4}</ProjectGuid>
-    <RootNamespace>JitteDRM</RootNamespace>
+    <ProjectGuid>{067F07F7-607C-43A2-AE83-86C86E738B32}</ProjectGuid>
+    <RootNamespace>BIN2HEX</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -110,7 +110,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="JitteDRM.cpp" />
+    <ClCompile Include="BIN2HEX.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
