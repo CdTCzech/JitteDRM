@@ -24,7 +24,7 @@ __declspec(noinline) long square(long num)
 	return num * num;
 }
 
-void emitCodeIn(unsigned char* m, const std::string password)
+bool emitCodeIn(unsigned char* m, const std::string password)
 {
 	unsigned char code[] =
 	{
@@ -45,92 +45,101 @@ void emitCodeIn(unsigned char* m, const std::string password)
 	}
 	else
 	{
-		std::cout << "Invalid password length!" << std::endl;
+		std::cout << "Invalid password length! Exiting..." << std::endl;
+		return false;
 	}
 
 	memcpy(m, code, codeSize);
+	return true;
 }
 
+void printHeader()
+{
+	std::cout << R"(JitteDRM v.20160826 compiled with Microsoft Visual Studio "15" )" << _MSC_FULL_VER << std::endl;
+}
 
 int main()
 {
+	printHeader();
+
 	std::string password;
 	std::cout << "Password: " << std::endl;
 	std::getline(std::cin, password);
 
-	int count1;
-	std::cout << "Count 1: " << std::endl;
-	std::cin >> count1;
-
-	int count2;
-	std::cout << "Count 2: " << std::endl;
-	std::cin >> count2;
-
-	int d = square(count1);
-
 	// encrypt code
 	void* memory1 = allocExecutableMemory(1024);
-	emitCodeIn(static_cast<unsigned char*>(memory1), password);
-
-	// get memory pointers
-	void* memory2 = static_cast<unsigned char*>(memory1) + 14;
-	void* memory3 = static_cast<unsigned char*>(memory2) + 12;
-	void* memory4 = static_cast<unsigned char*>(memory3) + 15;
-	void* memory5 = static_cast<unsigned char*>(memory4) + 12;
-	void* memory6 = static_cast<unsigned char*>(memory5) + 15;
-
-	// get functions
-	l_l_func addF = static_cast<l_l_func>(memory1);
-	l_l_func subF = static_cast<l_l_func>(memory2);
-	l_l_func mulF = static_cast<l_l_func>(memory3);
-	l_l_func divF = static_cast<l_l_func>(memory4);
-	l_l_l_func add2F = static_cast<l_l_l_func>(memory5);
-	l_l_l_func sub2F = static_cast<l_l_l_func>(memory6);
-
-	int result1, result2, result3, result4, result5, result6;
-	__asm
+	if (emitCodeIn(static_cast<unsigned char*>(memory1), password))
 	{
-		push	count1
-		call	addF
-		pop		edx
-		mov		result1, eax
+		int count1;
+		std::cout << "Count 1: " << std::endl;
+		std::cin >> count1;
 
-		push	count1
-		call	subF
-		pop		edx
-		mov		result2, eax
+		int count2;
+		std::cout << "Count 2: " << std::endl;
+		std::cin >> count2;
 
-		push	count1
-		call	mulF
-		pop		edx
-		mov		result3, eax
+		int d = square(count1);
 
-		push	count1
-		call	divF
-		pop		edx
-		mov		result4, eax
+		// get memory pointers
+		void* memory2 = static_cast<unsigned char*>(memory1) + 14;
+		void* memory3 = static_cast<unsigned char*>(memory2) + 12;
+		void* memory4 = static_cast<unsigned char*>(memory3) + 15;
+		void* memory5 = static_cast<unsigned char*>(memory4) + 12;
+		void* memory6 = static_cast<unsigned char*>(memory5) + 15;
 
-		push	count2
-		push	count1
-		call	add2F
-		pop		edx
-		pop		edx
-		mov		result5, eax
+		// get functions
+		l_l_func addF = static_cast<l_l_func>(memory1);
+		l_l_func subF = static_cast<l_l_func>(memory2);
+		l_l_func mulF = static_cast<l_l_func>(memory3);
+		l_l_func divF = static_cast<l_l_func>(memory4);
+		l_l_l_func add2F = static_cast<l_l_l_func>(memory5);
+		l_l_l_func sub2F = static_cast<l_l_l_func>(memory6);
 
-		push	count2
-		push	count1
-		call	sub2F
-		pop		edx
-		pop		edx
-		mov		result6, eax
+		int result1, result2, result3, result4, result5, result6;
+		__asm
+		{
+			push	count1
+			call	addF
+			pop		edx
+			mov		result1, eax
+
+			push	count1
+			call	subF
+			pop		edx
+			mov		result2, eax
+
+			push	count1
+			call	mulF
+			pop		edx
+			mov		result3, eax
+
+			push	count1
+			call	divF
+			pop		edx
+			mov		result4, eax
+
+			push	count2
+			push	count1
+			call	add2F
+			pop		edx
+			pop		edx
+			mov		result5, eax
+
+			push	count2
+			push	count1
+			call	sub2F
+			pop		edx
+			pop		edx
+			mov		result6, eax
+		}
+		std::cout << count1 << " + " << count1 << " = " << result1 << std::endl;
+		std::cout << count1 << " - " << count1 << " = " << result2 << std::endl;
+		std::cout << count1 << " * " << count1 << " = " << result3 << std::endl;
+		std::cout << count1 << " / " << count1 << " = " << result4 << std::endl;
+		std::cout << count1 << " + " << count2 << " = " << result5 << std::endl;
+		std::cout << count1 << " - " << count2 << " = " << result6 << std::endl;
+		std::cout << d;
 	}
-	std::cout << count1 << " + " << count1 << " = " << result1 << std::endl;
-	std::cout << count1 << " - " << count1 << " = " << result2 << std::endl;
-	std::cout << count1 << " * " << count1 << " = " << result3 << std::endl;
-	std::cout << count1 << " / " << count1 << " = " << result4 << std::endl;
-	std::cout << count1 << " + " << count2 << " = " << result5 << std::endl;
-	std::cout << count1 << " - " << count2 << " = " << result6 << std::endl;
-	std::cout << d;
 
 	system("pause");
 	return 0;
